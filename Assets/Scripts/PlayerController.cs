@@ -8,22 +8,21 @@ public class PlayerController : MonoBehaviour
     public string AreaTransitionName { get; set; }
 
     [SerializeField] private float moveSpeed = 10;
+
     private Rigidbody2D _rb; 
     private Animator _animator;
-    
+    private Vector3 _bottomLeftLimit, _topRightLimit; 
+
+    void Awake()
+    {
+        if (instance == null)
+            instance = this;
+        else
+            Destroy(gameObject);
+    }
 
     void Start()
     {
-        if(instance == null)
-        {
-            instance = this;
-        }
-        else
-        {
-            Destroy(this.gameObject);
-        }
-
-
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
 
@@ -33,6 +32,10 @@ public class PlayerController : MonoBehaviour
     void Update()
     {
         _rb.velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * moveSpeed;
+
+        transform.position = new Vector3(Mathf.Clamp(transform.position.x, _bottomLeftLimit.x, _topRightLimit.x),
+                                        Mathf.Clamp(transform.position.y, _bottomLeftLimit.y, _topRightLimit.y),
+                                        transform.position.z);
 
         Animate();
     }
@@ -50,5 +53,11 @@ public class PlayerController : MonoBehaviour
             _animator.SetFloat("lastMoveX", Input.GetAxisRaw("Horizontal"));
             _animator.SetFloat("lastMoveY", Input.GetAxisRaw("Vertical"));
         }
+    }
+
+    public void SetBounds(Vector3 botLeft, Vector3 topRight)
+    {
+        _bottomLeftLimit = botLeft + new Vector3(.4f, .4f, 0);
+        _topRightLimit = topRight + new Vector3(-.4f, -.4f, 0);;
     }
 }

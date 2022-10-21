@@ -12,6 +12,8 @@ public class AreaEntrance : MonoBehaviour
         {
             PlayerController.instance.transform.position = this.transform.position;
         }
+
+        UIFade.instance.FadeFromBlack();
     }
 
 }
