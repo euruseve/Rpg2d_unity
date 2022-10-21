@@ -4,14 +4,30 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    public static PlayerController instance;
+    public string AreaTransitionName { get; set; }
+
     [SerializeField] private float moveSpeed = 10;
-    private Rigidbody2D _rb;
+    private Rigidbody2D _rb; 
     private Animator _animator;
+    
 
     void Start()
     {
+        if(instance == null)
+        {
+            instance = this;
+        }
+        else
+        {
+            Destroy(this.gameObject);
+        }
+
+
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+
+        DontDestroyOnLoad(this.gameObject);
     }
 
     void Update()
