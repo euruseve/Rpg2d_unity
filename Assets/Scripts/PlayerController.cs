@@ -6,6 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     public static PlayerController instance;
     public string AreaTransitionName { get; set; }
+    public bool CanMove { get; set; }
 
     [SerializeField] private float moveSpeed = 10;
 
@@ -23,6 +24,8 @@ public class PlayerController : MonoBehaviour
 
     void Start()
     {
+        CanMove = true;
+
         _rb = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
 
@@ -31,7 +34,14 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        _rb.velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * moveSpeed;
+        if(CanMove)
+        {
+            _rb.velocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")) * moveSpeed;
+        }
+        else
+        {
+            _rb.velocity = Vector2.zero;
+        }
 
         transform.position = new Vector3(Mathf.Clamp(transform.position.x, _bottomLeftLimit.x, _topRightLimit.x),
                                         Mathf.Clamp(transform.position.y, _bottomLeftLimit.y, _topRightLimit.y),
@@ -45,13 +55,16 @@ public class PlayerController : MonoBehaviour
         _animator.SetFloat("moveX", _rb.velocity.x);
         _animator.SetFloat("moveY", _rb.velocity.y);
 
-        if(Input.GetAxisRaw("Horizontal") == 1 || 
-        Input.GetAxisRaw("Horizontal") == -1 || 
-        Input.GetAxisRaw("Vertical") == 1 || 
-        Input.GetAxisRaw("Vertical") == -1)
+        if (CanMove)
         {
-            _animator.SetFloat("lastMoveX", Input.GetAxisRaw("Horizontal"));
-            _animator.SetFloat("lastMoveY", Input.GetAxisRaw("Vertical"));
+            if (Input.GetAxisRaw("Horizontal") == 1 || 
+            Input.GetAxisRaw("Horizontal") == -1 || 
+            Input.GetAxisRaw("Vertical") == 1 || 
+            Input.GetAxisRaw("Vertical") == -1)
+            {
+                _animator.SetFloat("lastMoveX", Input.GetAxisRaw("Horizontal"));
+                _animator.SetFloat("lastMoveY", Input.GetAxisRaw("Vertical"));
+            }
         }
     }
 
